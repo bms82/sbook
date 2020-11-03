@@ -1,143 +1,93 @@
 package oracle.java.book.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.log4j.Log4j;
-import oracle.java.book.domain.SampleDTO;
-import oracle.java.book.domain.SampleDTOList;
-import oracle.java.book.domain.TodoDTO;
+import oracle.java.book.domain.SampleVO;
+import oracle.java.book.domain.Ticket;
 
-@Controller
-@RequestMapping("/sample/*")
+@RestController
+@RequestMapping("/sample")
 @Log4j
 public class SampleController {
 
-	@InitBinder
-	public void initBinder(WebDataBinder binder) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(dateFormat, false));
+	@GetMapping(value = "/getText", produces = "text/plain; charset=UTF-8")
+	public String getText() {
 		
-	}
-	
-	
-	@RequestMapping("")
-	public void basic() {
+		log.info("MIME TYPE : " + MediaType.TEXT_PLAIN_VALUE);
 		
-		log.info("basic....................");
-	}
-	
-	@RequestMapping(value = "/basic", method = {RequestMethod.GET, RequestMethod.POST})
-	public void basicGet() {
-		
-		log.info("basic get...........");
-	}
-	
-	@RequestMapping("/basicOnlyGet")
-	public void basicGet2() {
-		
-		log.info("basic get only get ......... ");
-	}
-	
-	@RequestMapping("/ex01")
-	public String ex01(SampleDTO dto) {
-		log.info("" + dto);
-		
-		return "ex01";
-	}
-	
-	@GetMapping("/ex02")
-	public String ex02(@RequestParam("name") String name, @RequestParam("age") int age) {
-		log.info("name : " + name);
-		log.info("age: " + age);
-		
-		return "ex02";
-	}
-	
-	@GetMapping("/ex02List")
-	public String ex02List(@RequestParam("ids")ArrayList<String> ids) {
-		log.info("ids : " + ids);
-		
-		return "ex02List";
-	}
-	
-	@GetMapping("/ex02Array")
-	public String ex02Array(@RequestParam("ids") String[] ids) {
-		log.info("array ids : " + Arrays.toString(ids));
-		
-		return "ex02Array";
-	}
-	
-	@GetMapping("/ex02Bean")
-	public String ex02Bean(SampleDTOList list) {
-		log.info("list dtos : " + list);
-		
-		return "ex02Bean";
+		return "안녕하세요";
 	}
 
-	@GetMapping("/ex03")
-	public String ex03(TodoDTO todo) {
-		log.info("todo : " + todo);
+	@GetMapping(value = "/getSample", produces = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.APPLICATION_XML_VALUE} )
+	public SampleVO getSample() {
 		
-		return "ex03";
-	}
-
-	@GetMapping("/ex04")
-	public String ex04(SampleDTO dto, @ModelAttribute("page") int page) {
-		log.info("dto : " + dto);
-		log.info("page : " + page);
-		
-		return "/sample/ex04";
+		return new SampleVO(112, "스타", "로드");
 	}
 	
-	@GetMapping("/ex05")
-	public void ex05() {
-		log.info("/ex05...............");
+	@GetMapping(value = "/getList")
+	public List<SampleVO> getList() {
+		
+		return IntStream.range(1, 10).mapToObj(i -> new SampleVO(i, i + " first", i + " Last")).collect(Collectors.toList());
 	}
 	
-	@GetMapping("/ex06")
-	public @ResponseBody SampleDTO ex06() {
+	@GetMapping(value = "/getSample2")
+	public SampleVO getSample2() {
+		return new SampleVO(113, "로켓", "라쿤");
+	}
+	
+	@GetMapping(value = "/getMap")
+	public Map<String, SampleVO> getMap() {
 		
-		log.info("/ex06.............");
-		SampleDTO dto = new SampleDTO();
-		dto.setAge(10);
-		dto.setName("홍길동");
+		Map<String, SampleVO> map = new HashMap<String, SampleVO>();
+		map.put("first", new SampleVO(111, "그루트", "주니어"));
 		
-		return dto;
+		return map;
 		
 	}
 	
-	@GetMapping("/ex07")
-	public ResponseEntity<String> ex07() {
+	@GetMapping(value = "/check", params = {"height", "weight"})
+	public ResponseEntity<SampleVO> check(Double height, Double weight) {
 		
-		String msg = "{\"name\": \"홍길동\"}";
+		SampleVO vo = new SampleVO(0, "" + height, "" + weight);
 		
-		HttpHeaders header = new HttpHeaders();
-		header.add("Content-Type", "application/json;charset=UTF-8");
+		ResponseEntity<SampleVO> result = null;
 		
-		return new ResponseEntity<>(msg, header, HttpStatus.OK);
+		if (height < 150) {
+			result = ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(vo);
+		} else {
+			result = ResponseEntity.status(HttpStatus.OK).body(vo);
+		}
+		
+		return result;
 	}
 	
-	@GetMapping("/exUpload")
-	public void exUpload() {
+	@GetMapping("/product/{cat}/{pid}")
+	public String[] getPath(@PathVariable("cat") String cat, @PathVariable("pid") Integer pid) {
 		
-		log.info("/exUpload...............");
+		return new String[] {"category : " + cat, "productid : " + pid};
 	}
 	
+	@PostMapping("/ticket")
+	public Ticket convert(@RequestBody Ticket ticket) {
+		
+		log.info("convert ......... ticket" + ticket);
+		
+		return ticket;
+	}
 	
 }

@@ -36,6 +36,8 @@
 							<input type="hidden" id="bno" name="bno" value="<c:out value='${board.bno }'/>">
 							<input type="hidden" name="pageNum" value="<c:out value='${cri.pageNum }'/>">					
 							<input type="hidden" name="amount" value="<c:out value='${cri.amount }'/>">					
+							<input type="hidden" name="keyword" value="<c:out value='${cri.keyword }'/>">					
+							<input type="hidden" name="type" value="<c:out value='${cri.type }'/>">					
 						</form>
 						</div>
 						<!--  end panel body -->
@@ -45,8 +47,43 @@
 				<!--  end panel -->
 				</div>
 				<!--  end row -->
+				<script type="text/javascript" src="/resources/js/reply.js"></script>
 				<script type="text/javascript">
+				
+				console.log("=========================");
+				console.log("JS TEST");
+				
+				var bnoValue = '<c:out value="${board.bno}"/>'
+				
+				replyService.add(
+					{reply: "JS Test", replyer:"tester", bno:bnoValue},	
+					function(result) {
+						alert("RESULT : " + result);
+					}
+				)
+				
+				replyService.getList({bno:bnoValue, page:1}, function(list){
+					
+					for (var i = 0, len = list.length||0; i < len; i++) {
+						console.log(list[i]);
+					}
+					
+				})
+				
+				replyService.remove(23, function(count) {
+					
+					console.log(count);
+					
+					if (count === "success") {
+						alert("REMOVED");
+					}
+				}, function(err) {
+					alert("ERROR ....");
+				});
+				
 				$(document).ready(function () {
+					
+					console.log(replyService);
 					
 					var operForm = $("#operForm");
 					

@@ -9,13 +9,15 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
-@ComponentScan(basePackages= {"oracle.java.book.sample", "oracle.java.book.service"})
+@ComponentScan(basePackages= {"oracle.java.book.sample", "oracle.java.book.service", "oracle.java.book.aop"})
 @MapperScan(basePackages = {"oracle.java.book.mapper"})
+@EnableAspectJAutoProxy
 public class RootConfig {
 
 	@Bean
@@ -24,7 +26,7 @@ public class RootConfig {
 //		hikariConfig.setDriverClassName("oracle.jdbc.driver.OracleDriver");
 //		hikariConfig.setJdbcUrl("jdbc:oracle:thin:@localhost:1521:ORCL");
 		hikariConfig.setDriverClassName("net.sf.log4jdbc.sql.jdbcapi.DriverSpy");
-		hikariConfig.setJdbcUrl("jdbc:log4jdbc:oracle:thin:@localhost:1521:ORCL");
+		hikariConfig.setJdbcUrl("jdbc:log4jdbc:oracle:thin:@localhost:1521:XE");
 		hikariConfig.setUsername("spring");
 		hikariConfig.setPassword("tiger");
 		
