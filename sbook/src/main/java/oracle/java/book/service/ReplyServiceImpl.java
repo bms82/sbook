@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import oracle.java.book.domain.Criteria;
+import oracle.java.book.domain.ReplyPageDTO;
 import oracle.java.book.domain.ReplyVO;
 import oracle.java.book.mapper.ReplyMapper;
 
@@ -53,6 +54,12 @@ public class ReplyServiceImpl implements ReplyService {
 
 		log.info("get Reply List of a Board "+bno);
 		return mapper.getListWithPaging(cri, bno);
+	}
+
+	@Override
+	public ReplyPageDTO getListPage(Criteria cri, Long bno) {
+		
+		return new ReplyPageDTO(mapper.getCountByBno(bno), mapper.getListWithPaging(cri, bno));
 	}
 
 }
