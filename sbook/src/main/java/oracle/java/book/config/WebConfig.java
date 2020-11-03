@@ -1,6 +1,7 @@
 package oracle.java.book.config;
 
 import javax.servlet.Filter;
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletRegistration;
 
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +31,8 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
 		
 		registration.setInitParameter("throwExceptionIfNoHandlerFound", "true");
 		
+		MultipartConfigElement multipartConfig = new MultipartConfigElement("D:\\upload\\tmp", 20971520, 41943040, 20971520);
+		registration.setMultipartConfig(multipartConfig);
 	}
 	
 	@Override
